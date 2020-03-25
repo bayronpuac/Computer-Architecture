@@ -10,12 +10,40 @@ class CPU:
         self.ram = [0] * 256
         self.reg = [0] * 8
         self.pc = 0
+        self.branchtable = {}
+        self.branchtable[0b00000001] = self.operand_hlt
+        self.branchtable[0b01000111] = self.operand_prn
+        self.branchtable[0b10000010] = self.operand_ldi
+        self.branchtable[0b10100010] = self.operand_mlt
     
     
     def ram_read(self, mar):
         return self.ram[mar]
     def ram_write(self, mar, mdr):
         self.ram[mar] = mdr    
+    def read_params(self):
+        params = sys.argv
+        if len(params) != 2: # a file is being passed through
+            print("usage: file.py filename")
+            sys.exit(1)
+        if len(params)==2:   
+            try:
+                with open(params[1]) as f:
+                    address = 0
+                    for line in f:
+                        # print(line)
+                        comment_split = line.split("#")
+                        # Strip out whitespace
+                        num = comment_split[0].strip()
+                        # Ignore blank lines
+                        if num == '':
+                            continue
+                        val = int("0b"+num,2)
+                        self.ram_write(address, val)
+                        address += 1    
+            except FileNotFoundError:
+                print("File not found")
+                sys.exit(2)
 
     def load(self):
         """Load a program into memory."""
@@ -68,6 +96,27 @@ class CPU:
             print(" %02X" % self.reg[i], end='')
 
         print()
+    def operand_ldi(self):
+        reg_num = self.ram_read(self.pc + 1)
+        value = self.ram_read(self.pc + 2)
+        self.reg[reg_num] = value
+        self.pc += 3
+    def operand_prn(self):
+        reg_num = self.ram_read(self.pc + 1)
+        print(self.reg[reg_num])
+        self.pc += 2  
+    def operand_hlt(self):
+        self.pc += 1
+        return False
+    def operand_mlt(self):
+        reg_num = self.ram_read(self.pc + 1)
+        reg_num2 = self.ram_read(self.pc + 2)
+        value = self.reg[reg_num] * self.reg[reg_num2]
+        self.reg[reg_num] = value
+        print(value)
+        self.pc += 3
+        
+    
 
     def run(self):
         """Run the CPU."""
@@ -83,25 +132,30 @@ class CPU:
         pc = self.pc 
         
         while running:
-            command = ram[pc]
-            if command == ldi:
-                reg_num = self.ram_read(pc + 1)
-                value = self.ram_read(pc + 2)
-                self.ram_write(reg_num,value)
-                pc += 3
-            elif command == prn:
-                reg_num = self.ram_read(pc + 1)
-                print(reg[reg_num])
-                pc += 2
-            elif command == hlt:
-                running = False 
-                pc += 1
-            elif command == mlt:
-                reg_num = self.ram_read(pc + 1)
-                reg_num2 = self.ram_read(pc + 2)
-                value = reg[reg_num] * reg[reg_num2]
-                reg[reg_num] = value
+            command = self.ram[self.pc]
+            if command == hlt:
+                running = False
+            self.branchtable[command]()
+            # command = ram[pc]
+            # if command == ldi:
+            #     reg_num = self.ram_read(pc + 1)
+            #     value = self.ram_read(pc + 2)
+            #     reg[reg_num] = value
+            #     pc += 3
+            # elif command == prn:
+            #     reg_num = self.ram_read(pc + 1)
+            #     print(reg[reg_num])
+            #     pc += 2
+            # elif command == hlt:
+            #     running = False 
+            #     pc += 1
+            # elif command == mlt:
+            #     reg_num = self.ram_read(pc + 1)
+            #     reg_num2 = self.ram_read(pc + 2)
+            #     value = reg[reg_num] * reg[reg_num2]
+            #     reg[reg_num] = value
+            #     pc += 3
 
-            else:
-                print(f"Unknown instruction: {command}")
+            # else:
+            #     print(f"Unknown instruction: {command}")
                 
