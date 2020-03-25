@@ -10,6 +10,8 @@ class CPU:
         self.ram = [0] * 256
         self.reg = [0] * 8
         self.pc = 0
+        self.sp = 7
+        self.reg[self.sp] = 0xf4
         self.branchtable = {}
         self.branchtable[0b00000001] = self.operand_hlt
         self.branchtable[0b01000111] = self.operand_prn
@@ -125,17 +127,32 @@ class CPU:
         prn = 0b01000111
         hlt = 0b00000001
         mlt = 0b10100010
+        push = 0b01000101
+        pop = 0b01000110 
 
         running = True
         ram = self.ram 
-        reg =  self.reg 
+        reg = self.reg 
         pc = self.pc 
         
         while running:
             command = self.ram[self.pc]
             if command == hlt:
                 running = False
-            self.branchtable[command]()
+            elif command == push:
+                self.reg[self.sp] -= 1
+                reg_num = self.ram[self.pc + 1]
+                value = self.reg[reg_num]
+                self.ram[self.reg[self.sp]] = value
+                self.pc += 2
+            elif command == pop:
+                value = self.ram[self.reg[self.sp]]
+                reg_num = self.ram[self.pc + 1]
+                self.reg[reg_num] = value
+                self.reg[self.sp] += 1
+                self.pc += 2
+            else:
+                self.branchtable[command]()
             # command = ram[pc]
             # if command == ldi:
             #     reg_num = self.ram_read(pc + 1)
