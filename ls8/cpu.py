@@ -17,6 +17,8 @@ class CPU:
         self.branchtable[0b01000111] = self.operand_prn
         self.branchtable[0b10000010] = self.operand_ldi
         self.branchtable[0b10100010] = self.operand_mlt
+        self.branchtable[0b01000110] = self.operand_pop
+        self.branchtable[0b01000101] = self.operand_push
     
     
     def ram_read(self, mar):
@@ -117,7 +119,19 @@ class CPU:
         self.reg[reg_num] = value
         print(value)
         self.pc += 3
-        
+    def operand_pop(self):
+        value = self.ram[self.reg[self.sp]]
+        reg_num = self.ram[self.pc + 1]
+        self.reg[reg_num] = value
+        self.reg[self.sp] += 1
+        self.pc += 2
+    def operand_push(self):
+        self.reg[self.sp] -= 1
+        reg_num = self.ram[self.pc + 1]
+        value = self.reg[reg_num]
+        self.ram[self.reg[self.sp]] = value
+        self.pc += 2
+
     
 
     def run(self):
@@ -135,24 +149,26 @@ class CPU:
         reg = self.reg 
         pc = self.pc 
         
-        while running:
-            command = self.ram[self.pc]
-            if command == hlt:
-                running = False
-            elif command == push:
-                self.reg[self.sp] -= 1
-                reg_num = self.ram[self.pc + 1]
-                value = self.reg[reg_num]
-                self.ram[self.reg[self.sp]] = value
-                self.pc += 2
-            elif command == pop:
-                value = self.ram[self.reg[self.sp]]
-                reg_num = self.ram[self.pc + 1]
-                self.reg[reg_num] = value
-                self.reg[self.sp] += 1
-                self.pc += 2
-            else:
-                self.branchtable[command]()
+        # while running:
+        #     command = self.ram[self.pc]
+            # if command == hlt:
+            #     running = False
+            # elif command == push:
+            #     self.reg[self.sp] -= 1
+            #     reg_num = self.ram[self.pc + 1]
+            #     value = self.reg[reg_num]
+            #     self.ram[self.reg[self.sp]] = value
+            #     self.pc += 2
+            # elif command == pop:
+            #     value = self.ram[self.reg[self.sp]]
+            #     reg_num = self.ram[self.pc + 1]
+            #     self.reg[reg_num] = value
+            #     self.reg[self.sp] += 1
+            #     self.pc += 2
+            # else:
+        while not (self.ram_read(self.pc) is hlt):
+                    instruction = self.ram_read(self.pc)
+                    self.branchtable[instruction]()
             # command = ram[pc]
             # if command == ldi:
             #     reg_num = self.ram_read(pc + 1)
