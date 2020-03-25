@@ -149,46 +149,6 @@ class CPU:
         reg = self.reg 
         pc = self.pc 
         
-        # while running:
-        #     command = self.ram[self.pc]
-            # if command == hlt:
-            #     running = False
-            # elif command == push:
-            #     self.reg[self.sp] -= 1
-            #     reg_num = self.ram[self.pc + 1]
-            #     value = self.reg[reg_num]
-            #     self.ram[self.reg[self.sp]] = value
-            #     self.pc += 2
-            # elif command == pop:
-            #     value = self.ram[self.reg[self.sp]]
-            #     reg_num = self.ram[self.pc + 1]
-            #     self.reg[reg_num] = value
-            #     self.reg[self.sp] += 1
-            #     self.pc += 2
-            # else:
         while not (self.ram_read(self.pc) is hlt):
                     instruction = self.ram_read(self.pc)
                     self.branchtable[instruction]()
-            # command = ram[pc]
-            # if command == ldi:
-            #     reg_num = self.ram_read(pc + 1)
-            #     value = self.ram_read(pc + 2)
-            #     reg[reg_num] = value
-            #     pc += 3
-            # elif command == prn:
-            #     reg_num = self.ram_read(pc + 1)
-            #     print(reg[reg_num])
-            #     pc += 2
-            # elif command == hlt:
-            #     running = False 
-            #     pc += 1
-            # elif command == mlt:
-            #     reg_num = self.ram_read(pc + 1)
-            #     reg_num2 = self.ram_read(pc + 2)
-            #     value = reg[reg_num] * reg[reg_num2]
-            #     reg[reg_num] = value
-            #     pc += 3
-
-            # else:
-            #     print(f"Unknown instruction: {command}")
-                
