@@ -143,7 +143,11 @@ class CPU:
         self.pc += 3
     def operand_jmp(self,):
         self.pc = self.reg[self.ram[self.pc+1]]
-
+    def operand_jne(self,):
+        if self.flag == False:
+            self.pc = self.reg[self.ram[self.pc+1]]
+        else:
+            self.pc += 2          
 
     
 
