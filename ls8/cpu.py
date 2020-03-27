@@ -131,6 +131,7 @@ class CPU:
         value = self.reg[reg_num]
         self.ram[self.reg[self.sp]] = value
         self.pc += 2
+        
 
     
 
