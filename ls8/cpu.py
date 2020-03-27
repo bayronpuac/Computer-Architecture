@@ -141,6 +141,9 @@ class CPU:
         value_2 = self.reg[self.ram[self.pc + 2]]
         self.flag = value_1 == value_2
         self.pc += 3
+    def operand_jmp(self,):
+        self.pc = self.reg[self.ram[self.pc+1]]
+
     
 
     def run(self):
