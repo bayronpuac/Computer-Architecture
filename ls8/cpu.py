@@ -19,6 +19,10 @@ class CPU:
         self.branchtable[0b10100010] = self.operand_mlt
         self.branchtable[0b01000110] = self.operand_pop
         self.branchtable[0b01000101] = self.operand_push
+        self.branchtable[0b10100111] = self.operand_cmp
+        self.branchtable[0b01010101] = self.operand_jeq
+        self.branchtable[0b01010110] = self.operand_jne
+        self.branchtable[0b01010100] = self.operand_jmp
     
     
     def ram_read(self, mar):
@@ -131,8 +135,12 @@ class CPU:
         value = self.reg[reg_num]
         self.ram[self.reg[self.sp]] = value
         self.pc += 2
-        
 
+    def operand_cmp(self,):
+        value_1 = self.reg[self.ram[self.pc + 1]]
+        value_2 = self.reg[self.ram[self.pc + 2]]
+        self.flag = value_1 == value_2
+        self.pc += 3
     
 
     def run(self):
@@ -143,7 +151,11 @@ class CPU:
         hlt = 0b00000001
         mlt = 0b10100010
         push = 0b01000101
-        pop = 0b01000110 
+        pop = 0b01000110
+        cpm = 0b10100111
+        jeq = 0b01010101
+        jne = 0b01010110
+        EF = 0 
 
         running = True
         ram = self.ram 
