@@ -159,21 +159,9 @@ class CPU:
     def run(self):
         """Run the CPU."""
 
-        ldi = 0b10000010
-        prn = 0b01000111
         hlt = 0b00000001
-        mlt = 0b10100010
-        push = 0b01000101
-        pop = 0b01000110
-        cpm = 0b10100111
-        jeq = 0b01010101
-        jne = 0b01010110
-        EF = 0 
 
-        running = True
-        ram = self.ram 
-        reg = self.reg 
-        pc = self.pc 
+
         
         while not (self.ram_read(self.pc) is hlt):
                     instruction = self.ram_read(self.pc)
