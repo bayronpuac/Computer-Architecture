@@ -148,6 +148,11 @@ class CPU:
             self.pc = self.reg[self.ram[self.pc+1]]
         else:
             self.pc += 2          
+    def operand_jeq(self,):
+        if self.flag:
+            self.pc = self.reg[self.ram[self.pc+1]]
+        else:
+            self.pc += 2 
 
     
 
