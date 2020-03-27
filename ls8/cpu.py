@@ -144,6 +144,7 @@ class CPU:
     def operand_jmp(self,):
         self.pc = self.reg[self.ram[self.pc+1]]
 
+
     
 
     def run(self):
